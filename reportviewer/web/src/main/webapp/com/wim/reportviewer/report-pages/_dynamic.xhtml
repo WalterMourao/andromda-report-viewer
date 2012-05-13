@@ -1,0 +1,74 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:c="http://java.sun.com/jstl/core" xmlns:tr="http://myfaces.apache.org/trinidad"
+    xmlns:ajsfc="http://www.andromda.org/cartridges/jsf/facelets"
+    xmlns:lo="http://www.arcadian.com.br/taglib/logOne" >
+
+<ui:composition>
+    <c:forEach var="parameter" items="#{form.parameters}">
+                    <tr:inputText 
+                        id="#{parameter.name}"
+                        value="#{listReportsFillingParametersViewForm.parametersValues[parameter.name]}"
+                        label="#{parameter.label}:" 
+                        required="#{parameter.properties['view.required']}" 
+                        readOnly="false" converter="#{parameter.converter}" 
+                        rendered="#{empty parameter.properties['view.tag'] and parameter.type != 'java.util.Date' and parameter.type != 'java.lang.Boolean' }"/>
+					
+					<tr:panelLabelAndMessage label="#{parameter.label}: " rendered="#{parameter.properties['view.tag'] == 'inputDate' || parameter.properties['view.tag'] == 'inputDateTime' || (empty parameter.properties['view.tag'] and parameter.type == 'java.util.Date')}">
+                    	<tr:inputDate 
+                        	id="#{parameter.name}"
+                        	value="#{listReportsFillingParametersViewForm.parametersValues[parameter.name]}"
+                        	required="#{parameter.properties['view.required']}" 
+                        	readOnly="false" converter="#{parameter.converter}" 
+                        	simple="true" 
+                        	contentStyle="margin-right: -5px;"
+                        	onblur="preencherHora('#{parameter.name}')">
+                        	<f:convertDateTime pattern="#{empty parameter.properties['view.pattern'] ? 'dd/MM/yyyy' : parameter.properties['view.pattern'] }"/>
+                    	</tr:inputDate> 
+	                   
+	                    <c:set var="paramNameHora" value="#{parameter.name}_hora"/>
+    	               
+    	                <tr:inputText 
+        	                id="#{parameter.name}_hora"
+            	            value="#{listReportsFillingParametersViewForm.parametersValues[paramNameHora]}"
+                	        required="false"
+                	        simple="true" 
+                    	    readOnly="false"  
+                        	rendered="#{parameter.properties['view.tag'] == 'inputDateTime'}"
+                        	maximumLength="5"
+                        	contentStyle="width: 36px; margin-left: 12px;"
+                        	shortDesc="Preencha este campo com as horas e minutos."
+                        	
+                        	>
+                       		<f:convertDateTime pattern="HH:mm"/>	
+                        </tr:inputText>	
+					</tr:panelLabelAndMessage>
+					
+                    <tr:panelLabelAndMessage rendered="#{parameter.properties['view.tag'] == 'checkbox' || parameter.type == 'java.lang.Boolean' }"  label="#{parameter.label}:" showRequired="false">
+				        <tr:selectOneChoice 
+				            id="#{parameter.name}"
+				            value="#{listReportsFillingParametersViewForm.parametersValues[parameter.name]}"
+				            required="#{parameter.properties['view.required']}" 
+				            readOnly="false" unselectedLabel="" 
+				            converter="#{parameter.converter}" >
+				            <tr:selectItem label="#{messages['yes']}" value="true"/>
+				            <tr:selectItem label="#{messages['no']}" value="false"/>
+				        </tr:selectOneChoice>
+                    </tr:panelLabelAndMessage>                                    
+
+                    <tr:panelLabelAndMessage rendered="#{parameter.properties['view.tag']== 'autocomplete' }"  label="#{parameter.label}:" showRequired="false">                                    
+                        <ajsfc:autocomplete 
+                            id="#{parameter.name}"
+                            parentId="listReportsFillingParametersViewForm"
+                            value="#{listReportsFillingParametersViewForm.parametersValues[parameter.name]}" 
+                            required="#{parameter.properties['view.required']}"
+                            locateBackingBean="#{lo:getBean(parameter.properties['view.locateBackingBean'])}" 
+                            locateActionListenerName="#{empty parameter.properties['view.locateActionListenerName'] ? 'fillAutocomplete' : parameter.properties['view.locateActionListenerName'] }"
+                            locateValueFieldName="id" 
+                            locateVisibleFieldName="#{parameter.properties['view.locateVisibleFieldName']}" 
+                            itemConverterId="#{parameter.properties['view.itemconverterid']}"
+                            converter="#{parameter.converter}" />
+                    </tr:panelLabelAndMessage> 
+    </c:forEach>
+</ui:composition>
+</html>
