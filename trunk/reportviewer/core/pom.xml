@@ -4,16 +4,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.wim.reportviewer</groupId>
-        <artifactId>reportViewer</artifactId>
+        <artifactId>reportviewer</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>reportViewer-core</artifactId>
+    <artifactId>reportviewer-core</artifactId>
     <packaging>jar</packaging>
     <name>Report Viewer Core Business Tier</name>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>reportViewer-common</artifactId>
+            <artifactId>reportviewer-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

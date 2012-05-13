@@ -3,7 +3,7 @@
 generates code for a project (using androMDA mvn install),
 and formats the code using an import beautifier.
 Customize as necessary - it is generated once only, when the project is created. -->
-<project name="reportViewer" default="all" basedir=".">
+<project name="reportviewer" default="all" basedir=".">
   <description>Create and deploy AndroMDA Application</description>
   <!-- set global properties for this build in build.properties file -->
   <property environment="env"/>
@@ -183,7 +183,7 @@ Customize as necessary - it is generated once only, when the project is created.
     <echo message="Refreshing and building project ${application.id}-app"/>
     <!--eclipse.refreshLocal resource="${application.id}-app" depth="infinite"/-->
     <!-- Comment out above, uncomment below if using separate Eclipse projects -->
-    <!--echo message="Refreshing and building project reportViewer"/>
+    <!--echo message="Refreshing and building project reportviewer"/>
     <eclipse.refreshLocal resource="${application.id}" depth="infinite"/>
     <eclipse.incrementalBuild project="${application.id}"/-->
   </target>
