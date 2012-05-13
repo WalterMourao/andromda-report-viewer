@@ -3140,7 +3140,7 @@
 		</options>
 		<favoriteElements xmi:value=''/>
 		<dataTypes xmi:idref='_9_0_2_be00301_1111670217596_336168_627'/>
-		<moduleID>Project reportViewer</moduleID>
+		<moduleID>Project reportviewer</moduleID>
 		<mdElement elementClass='StyleManager'>
 			<mdElement elementClass='SimpleStyle'>
 				<name>Défaut</name>

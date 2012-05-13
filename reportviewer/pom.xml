@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wim.reportviewer</groupId>
-    <artifactId>reportViewer</artifactId>
+    <artifactId>reportviewer</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>Report Viewer</name>
@@ -661,7 +661,7 @@
         <createChecksum>true</createChecksum>
         <uniqueVersion>false</uniqueVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <stagingDirectory>/home/walter/workspace/reportViewer/target/site</stagingDirectory>
+        <stagingDirectory>/home/walter/workspace/reportviewer/target/site</stagingDirectory>
         <!--
             Change this to generate to the correct MDA database mappings,
             For MySql use: MySQL
@@ -706,7 +706,7 @@
         <hibernate.dialect>
         </hibernate.dialect>
         <tomcat.home>${env.CATALINA_HOME}</tomcat.home>
-        <application.id>reportViewer</application.id>
+        <application.id>reportviewer</application.id>
         <application.package>com.wim.reportviewer</application.package>
         <application.name>Report Viewer</application.name>
         <application.version>1.0-SNAPSHOT</application.version>
@@ -757,20 +757,20 @@
                 </jdbc.driver>
                 <!--
                     Change connection url for appropriate database
-                    For MySQL use: jdbc:mysql://localhost:3306/reportViewer
+                    For MySQL use: jdbc:mysql://localhost:3306/reportviewer
                     For Hypersonic use: jdbc:hsqldb:hsql://127.0.0.1:1701
                     For Oracle9i use: jdbc:oracle:thin:@localhost:1521:yoursid
-                    For DB2 use: jdbc:db2:reportViewer
-                    For Informix use: jdbc:informix-sqli://localhost:1557/reportViewer:INFORMIXSERVER=myserver
-                    For MSSQL use: jdbc:microsoft:sqlserver://localhost:1433;DatabaseName=reportViewer
-                    For Pointbase use: jdbc:pointbase:server://@pointbase.server@:@pointbase.port/pointbase.reportViewer@,new
-                    For Postgres use: jdbc:postgresql://localhost/reportViewer
-                    For Sybase use: jdbc:sybase:Tds:localhost:5000/reportViewer?JCONNECT_VERSION=6
-                    For SapDB use: jdbc:sapdb://127.0.0.1/reportViewer
-                    For Progress use: jdbc:JdbcProgress:T:localhost:3305:reportViewer
+                    For DB2 use: jdbc:db2:reportviewer
+                    For Informix use: jdbc:informix-sqli://localhost:1557/reportviewer:INFORMIXSERVER=myserver
+                    For MSSQL use: jdbc:microsoft:sqlserver://localhost:1433;DatabaseName=reportviewer
+                    For Pointbase use: jdbc:pointbase:server://@pointbase.server@:@pointbase.port/pointbase.reportviewer@,new
+                    For Postgres use: jdbc:postgresql://localhost/reportviewer
+                    For Sybase use: jdbc:sybase:Tds:localhost:5000/reportviewer?JCONNECT_VERSION=6
+                    For SapDB use: jdbc:sapdb://127.0.0.1/reportviewer
+                    For Progress use: jdbc:JdbcProgress:T:localhost:3305:reportviewer
                 -->
                 <jdbc.url>
-                    jdbc:hsqldb:file:database/reportViewer;shutdown=true
+                    jdbc:hsqldb:file:database/reportviewer;shutdown=true
                 </jdbc.url>
                 <!-- Enter id/password for the database connection -->
                 <jdbc.username>
@@ -924,7 +924,7 @@
         </snapshotRepository>
         <site>
             <id>website</id>
-            <url>file:/var/www/docs/reportViewer</url>
+            <url>file:/var/www/docs/reportviewer</url>
         </site>
     </distributionManagement-->
     <!-- Comment to disable project reporting using default maven plugins -->

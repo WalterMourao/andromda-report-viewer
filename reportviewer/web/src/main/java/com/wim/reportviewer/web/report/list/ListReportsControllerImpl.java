@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.design.JasperDesign;
 
-import org.andromda.cartridges.jsf.Messages;
+import org.andromda.presentation.jsf.Messages;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -216,7 +216,7 @@ public class ListReportsControllerImpl
         @SuppressWarnings("unchecked")
         final ReportPrintInfo printInfo=ReportUtil.prepareReport(form.getFileName(),form.getParametersValues());
         if(printInfo.getJasperPrint().getPages().isEmpty()){
-            addWarningMessage(Messages.get("manutencao.de.reports.report.report.vazio",null));
+            addWarningMessage(Messages.get("manutencao.de.reports.report.report.vazio"));
             final ReportPrintInfo currentPrintInfo=getCurrentReportPrintInfo();
             form.setCurrentPage(currentPrintInfo==null ? 0 : currentPrintInfo.getPaginaAtual());
         } else {

@@ -257,7 +257,7 @@ public class WebAppUtil {
 	 */
 	static public void addErrorMessageFromProperties(final String messageKey)
 	{
-		addMessage(javax.faces.application.FacesMessage.SEVERITY_ERROR, Messages.get(messageKey,null));
+		addMessage(javax.faces.application.FacesMessage.SEVERITY_ERROR, Messages.get(messageKey));
 	}
 
 	/**
@@ -277,7 +277,7 @@ public class WebAppUtil {
 	 */
 	static public void addInfoMessageFromProperties(final String messageKey)
 	{
-		addMessage(javax.faces.application.FacesMessage.SEVERITY_INFO, Messages.get(messageKey,null));
+		addMessage(javax.faces.application.FacesMessage.SEVERITY_INFO, Messages.get(messageKey));
 	}
 
 	/**
@@ -287,7 +287,7 @@ public class WebAppUtil {
 	 */
 	static public void addErrorMessageFromProperties(final String clientId, final String messageKey)
 	{
-		addMessage(clientId,javax.faces.application.FacesMessage.SEVERITY_ERROR, Messages.get(messageKey,null));
+		addMessage(clientId,javax.faces.application.FacesMessage.SEVERITY_ERROR, Messages.get(messageKey));
 	}
 
 	/**
@@ -307,7 +307,7 @@ public class WebAppUtil {
 	 */
 	static public void addWarningMessageFromProperties(final String messageKey)
 	{
-		addMessage(javax.faces.application.FacesMessage.SEVERITY_WARN, Messages.get(messageKey,null));
+		addMessage(javax.faces.application.FacesMessage.SEVERITY_WARN, Messages.get(messageKey));
 	}
 
 	/**
