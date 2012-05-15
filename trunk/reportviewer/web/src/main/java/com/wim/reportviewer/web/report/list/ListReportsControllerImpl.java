@@ -3,17 +3,19 @@
 package com.wim.reportviewer.web.report.list;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.faces.convert.Converter;
 import javax.faces.convert.DateTimeConverter;
-import javax.servlet.http.HttpServletRequest;
 
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -52,70 +54,72 @@ public class ListReportsControllerImpl
     
     private static final String SAVED_SEARCH = ListReportsControllerImpl.class.getCanonicalName()+"_SAVED_SEARCH";
 
-    private Set<ReportInfo> loadReports(HttpServletRequest request, String filter ) {
-        final Set<ReportInfo> reports = new java.util.TreeSet<ReportInfo>(new Comparator<ReportInfo>(){
-            @Override
-            public int compare(ReportInfo ri1, ReportInfo ri2) {
-                return ri1.getName().compareToIgnoreCase(ri2.getName());
-            }
-        });
-        final Map<String,JasperDesign> lstReports = ReportUtil.getCurrentUserReports();
-        filter=ReportUtil.removeAccents(StringUtils.trimToEmpty(filter));
+    private Collection<ReportInfo> loadReports(String filter) throws IOException {
+        final List<ReportInfo> reports = new java.util.ArrayList<ReportInfo>();
+        final Map<String,JasperDesign> lstReports = ReportUtil.getReports();
+        filter=ReportUtil.removeAccents(StringUtils.trimToEmpty(filter)).toLowerCase();
 
         final Iterator<String> it = lstReports.keySet().iterator();
         while (it.hasNext()) {
-            final String currentReportName = (String) it.next();
-            JasperDesign report = (JasperDesign)lstReports.get(currentReportName);
+            final String currentReportFileName = (String) it.next();
+            JasperDesign report = (JasperDesign)lstReports.get(currentReportFileName);
 
             ReportInfo ir = new ReportInfo();
-            ir.setFileName(report.getPropertiesMap().getProperty(ReportConstants.REPORT_FILE_NAME_JRXML));
+            ir.setFileName(currentReportFileName);
             ir.setName(report.getName());
 
             if(StringUtils.isBlank(filter)){
                 reports.add(ir);
             }else{
-                if( ReportUtil.removeAccents(currentReportName).contains(filter)){
+                if( ReportUtil.removeAccents(ir.getName()).toLowerCase().contains(filter)){
                     reports.add(ir);
                 }
             }
         }
 
+        Collections.sort(reports, new Comparator<ReportInfo>(){
+            @Override
+            public int compare(ReportInfo ri1, ReportInfo ri2) {
+                return ri1.getName().compareToIgnoreCase(ri2.getName());
+            }
+        });
+        
         return reports;
     }
 
     /**
-     * @see com.wim.reportviewer.web.report.list.ListReportsController#refresh(java.util.Set<com.wim.reportviewer.web.report.ReportInfo> reports)
+     * @throws IOException 
+     * @see com.wim.reportviewer.web.report.list.ListReportsController#refresh(java.util.Collection<com.wim.reportviewer.web.report.ReportInfo> reports)
      */
     @Override
-    public void refresh(RefreshForm form)
+    public void refresh(RefreshForm form) throws IOException
     {
-        ReportUtil.compileReports(WebAppUtil.getServletContext());
-        ReportUtil.doCacheReports(super.getRequest().getSession());
+        ReportUtil.compileReports();
 
-        form.setReports(loadReports(super.getRequest(), null));
+        form.setReports(loadReports(null));
     }
 
     /**
-     * @see com.wim.reportviewer.web.report.list.ListReportsController#initialize(java.lang.String fileName, java.util.Set<com.wim.reportviewer.web.report.ReportInfo> reports)
+     * @throws IOException 
+     * @see com.wim.reportviewer.web.report.list.ListReportsController#initialize(java.lang.String fileName, java.util.Collection<com.wim.reportviewer.web.report.ReportInfo> reports)
      */
     @Override
-    public void initialize(InitializeForm form)
+    public void initialize(InitializeForm form) throws IOException
     {
-        ReportUtil.doCacheReports(super.getRequest().getSession());
-
         WebAppUtil.getPageFlowScope().remove(SAVED_SEARCH);
         form.setFileName(null);
-        form.setReports(loadReports(super.getRequest(), null));
+        form.setReports(loadReports(null));
     }
 
     /**
-     * @see com.wim.reportviewer.web.report.list.ListReportsController#search(java.lang.String report, java.util.Set<com.wim.reportviewer.web.report.ReportInfo> reports)
+     * @throws IOException 
+     * @see com.wim.reportviewer.web.report.list.ListReportsController#search(java.lang.String report, java.util.Collection<com.wim.reportviewer.web.report.ReportInfo> reports)
      */
     @Override
-    public void search(SearchForm form)
+    public void search(SearchForm form) throws IOException
     {
         String filter = StringUtils.trimToNull((String)WebAppUtil.getPageFlowScope().get(SAVED_SEARCH));
-        form.setReports(loadReports(super.getRequest(), filter));
+        form.setReports(loadReports(filter));
         form.setReport(filter);//pode estar vindo da visualização
     }
 
@@ -125,7 +129,7 @@ public class ListReportsControllerImpl
     }
 
     /**
-     * @see com.wim.reportviewer.web.report.list.ListReportsController#reportHasParameters(java.util.Set<com.wim.reportviewer.web.report.ReportParameter> parameters)
+     * @see com.wim.reportviewer.web.report.list.ListReportsController#reportHasParameters(java.util.Collection<com.wim.reportviewer.web.report.ReportParameter> parameters)
      */
     @Override
     public boolean reportHasParameters(ReportHasParametersForm form)
@@ -134,14 +138,12 @@ public class ListReportsControllerImpl
     }
 
     /**
-     * @see com.wim.reportviewer.web.report.list.ListReportsController#prepareParameters(java.lang.String fileName, java.util.Map parametersValues, java.lang.String title, java.lang.String parametersPage, java.util.Set<com.wim.reportviewer.web.report.ReportParameter> parameters)
+     * @see com.wim.reportviewer.web.report.list.ListReportsController#prepareParameters(java.lang.String fileName, java.util.Map parametersValues, java.lang.String title, java.lang.String parametersPage, java.util.Collection<com.wim.reportviewer.web.report.ReportParameter> parameters)
      */
     @Override
     public void prepareParameters(PrepareParametersForm form)
     {
         WebAppUtil.getPageFlowScope().remove(CURRENT_PRINT_INFO);
-
-        form.setParametersValues(new java.util.HashMap<String, Object>());
 
         final Map<String, Object> parametersValues = new java.util.HashMap<String, Object>();
         parametersValues.put(ReportConstants.REPORTS_BASE_DIR_VAR, super.getRequest().getSession().getServletContext().getRealPath(ReportConstants.REPORTS_FOLDER_COMPILED) + "/");
@@ -150,7 +152,7 @@ public class ListReportsControllerImpl
 
         form.setTitle(design.getName());
         final JRParameter[] jrParameters = design.getParameters();
-        final Set<ReportParameterInfo> infoParameters = new HashSet<ReportParameterInfo>();
+        final Collection<ReportParameterInfo> infoParameters = new ArrayList<ReportParameterInfo>();
 
         for (JRParameter jrParameter : jrParameters) {
             final String parameterName = jrParameter.getName();
@@ -196,9 +198,7 @@ public class ListReportsControllerImpl
         form.setParameters(infoParameters);
         form.setParametersValues(parametersValues);
 
-        //Verifica a existencia de pagina especifica de parametros com o mesmo nome do report, se n�o mostra a pagina de parametros dinamicos.
-        final String fileNameReportReal = design.getPropertiesMap().getProperty(ReportConstants.REPORT_FILE_NAME_JRXML);
-        final String pageParameterName = ReportConstants.REPORTS_PAGE_PARAMETERS + ReportUtil.toPageParametersPath(fileNameReportReal);
+        final String pageParameterName = ReportConstants.REPORTS_PAGE_PARAMETERS + form.getFileName() + ".xhtml";
         final String path = super.getSession(false).getServletContext().getRealPath(pageParameterName);
         final File pageParameterFile = new File(path);
         if(pageParameterFile.exists())
@@ -231,7 +231,11 @@ public class ListReportsControllerImpl
     @Override
     public void saveSearch(SaveSearchForm form)
     {
-        WebAppUtil.getPageFlowScope().put(SAVED_SEARCH, form.getReport());
+        if(StringUtils.isBlank(form.getReport())){
+            WebAppUtil.getPageFlowScope().remove(SAVED_SEARCH);
+        } else {
+            WebAppUtil.getPageFlowScope().put(SAVED_SEARCH, form.getReport());
+        }
     }
 
     /**
@@ -246,6 +250,11 @@ public class ListReportsControllerImpl
                     printInfo, 
                     getResponse());
         }
+    }
+    
+    @Override
+    public String viewingReportExport(){
+        return null;
     }
 
     /**

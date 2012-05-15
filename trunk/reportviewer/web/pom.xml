@@ -162,6 +162,10 @@
             <artifactId>jasperreports-fonts</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
         </dependency>
@@ -249,9 +253,12 @@
                           <maxIdleTime>60000</maxIdleTime>
                        </connector>
                     </connectors>
-                    <webAppSourceDirectory>${project.basedir}/target/src/main/webapp</webAppSourceDirectory>
+                    <webAppSourceDirectory></webAppSourceDirectory>
                     <webAppConfig>
                         <contextPath>/${application.id}</contextPath>
+                        <baseResource implementation="org.mortbay.resource.ResourceCollection">
+                            <resources>${project.basedir}/src/main/webapp,${project.basedir}/target/src/main/webapp</resources>
+                        </baseResource>
                     </webAppConfig>
                     <stopKey>foo</stopKey>
                     <stopPort>9999</stopPort>
