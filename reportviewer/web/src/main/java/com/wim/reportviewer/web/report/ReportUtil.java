@@ -11,14 +11,13 @@ import java.text.Normalizer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -45,10 +44,6 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 public class ReportUtil {
 
-    public static String toPageParametersPath(String fileName){
-        return fileName.substring(0, fileName.lastIndexOf(".")) + ".xhtml";
-    }
-
     public static Map<String,String> getParameterProperties(JRParameter jrParameter){
 		Map<String,String> propriedades = new HashMap<String,String>();
 
@@ -68,40 +63,39 @@ public class ReportUtil {
 	}  
 
 	@SuppressWarnings("unchecked")
-	public static Map<String,JasperDesign> getCurrentUserReports(){
-		return (Map<String,JasperDesign>)((HttpServletRequest)WebAppUtil.getFacesContext().getExternalContext().getRequest()).getSession().getAttribute(ReportConstants.LIST_ALL_REPORTS_JASPER_FOR_USER);
+	public static Map<String,JasperDesign> getReports() throws IOException{
+	    final ServletContext context=WebAppUtil.getServletContext();
+	    Map<String,JasperDesign> result=(Map<String,JasperDesign>)context.getAttribute(ReportConstants.LIST_ALL_REPORTS_JASPER);
+	    if(result == null){
+	        result=compileReports();
+	        context.setAttribute(ReportConstants.LIST_ALL_REPORTS_JASPER, result);
+	    }
+		return result;
 	}
 
 	public static boolean isReportLink(final String isLinked){
 		return (isLinked!=null && Boolean.valueOf(isLinked));
 	}
 
-	private static void addReportCache(Map<String,JasperDesign> lstRelatorisoEstruturados, String title, JasperDesign report, final String keyReport){
-		if(title == null){
-			title=report.getName().replace('_', ' ');
-		}
-		report.getPropertiesMap().setProperty(ReportConstants.REPORT_FILE_NAME_JRXML, keyReport );
-		lstRelatorisoEstruturados.put(title,report);
-	}
-
-	private static Map<String,JasperDesign> compileReports(String sourceFolder, String destFolder, final boolean force){
-        Map<String,JasperDesign> relatoriosCompilados = new Hashtable<String,JasperDesign>();
+	private static Map<String,JasperDesign> compileReports(String sourceFolder, String destFolder, final boolean force) throws IOException{
+        final Map<String,JasperDesign> relatoriosCompilados = new Hashtable<String,JasperDesign>();
 	    
         final File[] files = new File(sourceFolder).listFiles((FilenameFilter)FileFilterUtils.suffixFileFilter(".jrxml"));
         
         if (!ArrayUtils.isEmpty(files)) {
+            FileUtils.forceMkdir(new File(destFolder));
             for (File file : files) {
                 try {
                     final JasperDesign report = JRXmlLoader.load(new FileInputStream(file));
-
+                    final String baseFileName=FilenameUtils.removeExtension(file.getName());
                     //compila os relatorios verificando se o jrxml é mais novo que o jasper ou se force=true
-                    final String nomeRelatorioCompilado=FilenameUtils.concat(destFolder ,FilenameUtils.removeExtension(file.getName())  + ReportConstants.JASPER_COMPILED_EXTENSION);
+                    final String nomeRelatorioCompilado=FilenameUtils.concat(destFolder ,baseFileName  + ReportConstants.JASPER_COMPILED_EXTENSION);
                     final File relatorioCompilado = new File(nomeRelatorioCompilado);
                     if(   (!relatorioCompilado.exists()) || (file.lastModified() > relatorioCompilado.lastModified()) || force ){
                         JasperCompileManager.compileReportToFile(report, relatorioCompilado.getAbsolutePath());
                     }
 
-                    addReportCache(relatoriosCompilados, report.getProperty("previne.report.name") , report, file.getName());
+                    relatoriosCompilados.put(baseFileName, report);
 
                 } catch (Exception e) {
                     throw new RuntimeException("Falha na leitura ou compilação do relatorio " + file.getName() + " " +e.getLocalizedMessage()); 
@@ -112,59 +106,22 @@ public class ReportUtil {
         return relatoriosCompilados;
 	}
 
-	public static void compileReports(ServletContext context){
-		Map<String,JasperDesign> lstRelatoriosEstruturados;
+	public static Map<String,JasperDesign> compileReports() throws IOException{
+		final Map<String,JasperDesign> lstRelatoriosEstruturados;
 
 		//compilando os relatórios do previne
-		String sourcePath =  context.getRealPath(ReportConstants.REPORTS_FOLDER_SOURCE);
+		final ServletContext context=WebAppUtil.getServletContext();
+		final String sourcePath =  context.getRealPath(ReportConstants.REPORTS_FOLDER_SOURCE);
 		final String destPath = context.getRealPath(ReportConstants.REPORTS_FOLDER_COMPILED);
 		lstRelatoriosEstruturados = compileReports(sourcePath,destPath,false);
 		
-		context.setAttribute(ReportConstants.LIST_ALL_REPORTS_JASPER, lstRelatoriosEstruturados);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static void doCacheReports(HttpSession session){
-		Map<String,JasperDesign> lstRelEstruturadosForUser = new Hashtable<String,JasperDesign>();
-		//Busca na lista com todos os relatorios
-		final Hashtable<String,JasperDesign>lstReports = (Hashtable<String,JasperDesign>)((HttpServletRequest)WebAppUtil.getFacesContext().getExternalContext().getRequest()).getSession().getServletContext().getAttribute(ReportConstants.LIST_ALL_REPORTS_JASPER);
-
-		final Iterator<String> it = lstReports.keySet().iterator();
-		while (it.hasNext()) {
-			final String title = (String) it.next();
-			final JasperDesign report = (JasperDesign)lstReports.get(title);
-
-			final String previneRoles=report.getProperty("previne.roles");
-			if(previneRoles == null){
-				lstRelEstruturadosForUser.put(title,report);
-
-			} else if(previneRoles != null) {
-				if (WebAppUtil.isUserInRoles(previneRoles)){
-					lstRelEstruturadosForUser.put(title,report);
-				}
-
-			}
-
-		}
-
-		session.setAttribute(ReportConstants.LIST_ALL_REPORTS_JASPER_FOR_USER, lstRelEstruturadosForUser);
+		return lstRelatoriosEstruturados;
 	}
 
 	@SuppressWarnings("unchecked")
 	public static JasperDesign loadReport(String fileName){
-		if(!fileName.endsWith(ReportConstants.JASPER_EXTENSION)){
-			fileName+=ReportConstants.JASPER_EXTENSION;
-		}
 		final Hashtable<String,JasperDesign> lstReports = (Hashtable<String,JasperDesign>)((HttpServletRequest)WebAppUtil.getFacesContext().getExternalContext().getRequest()).getSession().getServletContext().getAttribute(ReportConstants.LIST_ALL_REPORTS_JASPER);
-		final Iterator<String> it = lstReports.keySet().iterator();
-		while (it.hasNext()) {
-			final String reportName = (String) it.next();
-			JasperDesign report = (JasperDesign)lstReports.get(reportName);
-			if ( report.getPropertiesMap().getProperty(ReportConstants.REPORT_FILE_NAME_JRXML).equalsIgnoreCase(fileName) ){
-				return report;
-			}
-		}
-		return null;
+		return lstReports.get(fileName);
 	} 
 
 	private static Session getCurrentHibernateSession(){
@@ -302,6 +259,7 @@ public class ReportUtil {
 		final Map<String,Object> imagesMap = new HashMap<String,Object>();
 		printInfo.setImagesMap(imagesMap);
 		
+		//should use pageflowscope
 		WebAppUtil.getSession().setAttribute(ReportConstants.IMAGES_MAP, imagesMap);
 		
 		exporter.setParameter(JRHtmlExporterParameter.ZOOM_RATIO, new Float(1.5));

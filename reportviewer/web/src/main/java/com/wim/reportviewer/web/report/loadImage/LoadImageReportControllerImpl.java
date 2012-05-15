@@ -30,7 +30,7 @@ public class LoadImageReportControllerImpl
     public void fillResponseWithImage()
     {
         @SuppressWarnings("rawtypes")
-        final Map imagesMap = (Map) WebAppUtil.getPageFlowScope().get(ReportConstants.IMAGES_MAP);
+        final Map imagesMap = (Map)WebAppUtil.getSession().getAttribute(ReportConstants.IMAGES_MAP);
         final HttpServletRequest request=WebAppUtil.getRequest();
         final HttpServletResponse response=WebAppUtil.getResponse();
     

@@ -6,6 +6,12 @@
     use the following merge points.
 -->
 <mappings name="WebMerge">
+    <mapping><!-- removing uneeded menu item -->
+        <from><![CDATA[<value>#{navItem_load_report_image_usecase}</value>]]></from>
+        <to>
+            <![CDATA[]]>
+        </to>
+    </mapping>
     <mapping>
         <from><![CDATA[<!-- context-param merge-point -->]]></from>
         <to>

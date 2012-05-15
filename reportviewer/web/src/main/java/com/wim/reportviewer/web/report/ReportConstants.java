@@ -14,11 +14,7 @@ public class ReportConstants {
 	
 	public static final String IMAGES_MAP = "IMAGES_MAP";
 	
-	public static final String REPORT_FILE_NAME_JRXML ="reportFileNameJrxml";
-	
 	public static final String LIST_ALL_REPORTS_JASPER ="listAllReportsJasper";
-	
-	public static final String LIST_ALL_REPORTS_JASPER_FOR_USER ="listAllReportsJasperForUser";
 	
 	public final static String MIME_TYPE_PDF = "application/pdf";
 	
@@ -33,5 +29,5 @@ public class ReportConstants {
     public static final String REPORTS_BASE_DIR_VAR = "BaseDir";
     public static final String REPORTS_LOGO_PATH_VAR = "LogoPath";
     
-	public static final String REPORTS_PAGE_PARAMETERS = "/com/wim/reportviewer/report-pages";
+	public static final String REPORTS_PAGE_PARAMETERS = "/com/wim/reportviewer/report-pages/";
 }
