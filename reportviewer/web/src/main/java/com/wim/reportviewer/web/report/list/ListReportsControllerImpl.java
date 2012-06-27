@@ -216,7 +216,7 @@ public class ListReportsControllerImpl
         @SuppressWarnings("unchecked")
         final ReportPrintInfo printInfo=ReportUtil.prepareReport(form.getFileName(),form.getParametersValues());
         if(printInfo.getJasperPrint().getPages().isEmpty()){
-            addWarningMessage(Messages.get("manutencao.de.reports.report.report.vazio"));
+            addWarningMessage(Messages.get("empty.report"));
             final ReportPrintInfo currentPrintInfo=getCurrentReportPrintInfo();
             form.setCurrentPage(currentPrintInfo==null ? 0 : currentPrintInfo.getPaginaAtual());
         } else {
@@ -254,6 +254,7 @@ public class ListReportsControllerImpl
     
     @Override
     public String viewingReportExport(){
+        super.viewingReportExport();
         return null;
     }
 
