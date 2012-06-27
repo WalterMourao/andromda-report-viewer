@@ -682,9 +682,9 @@
             For SapDB use: SapDB
             For Derby use: Derby
         -->
-        <sql.mappings>
-            HypersonicSql
-        </sql.mappings>
+<!--         <sql.mappings> -->
+<!--             HypersonicSql -->
+<!--         </sql.mappings> -->
         <!--
         Change this for the appropriate database
         For DB2 use: org.hibernate.dialect.DB2Dialect or org.hibernate.dialect.DB2390Dialect org.hibernate.dialect.DB2400Dialect
@@ -708,8 +708,8 @@
         For Sybase use: org.hibernate.dialect.SybaseDialect or org.hibernate.dialect.Sybase11Dialect
         For Sybase Anywhere use: org.hibernate.dialect.SybaseAnywhereDialect
         -->
-        <hibernate.dialect>
-        </hibernate.dialect>
+<!--         <hibernate.dialect> -->
+<!--         </hibernate.dialect> -->
         <tomcat.home>${env.CATALINA_HOME}</tomcat.home>
         <application.id>reportviewer</application.id>
         <application.package>com.wim.reportviewer</application.package>

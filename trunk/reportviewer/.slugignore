@@ -1,0 +1,12 @@
+.git
+common/target
+core/target
+mda/target
+web/target/antrun
+web/target/classes
+web/target/generated-sources
+web/target/maven-archiver
+web/target/reportviewer
+web/target/reportviewer-sources.jar
+web/target/src
+web/target/surefire

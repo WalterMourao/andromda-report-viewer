@@ -3,11 +3,11 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
-	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
-	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true" pdfFontName="Times-Roman"/>
-	<style name="Detail" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman"/>
-	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+	<style name="Title" forecolor="#FFFFFF" fontName="DejaVu Sans" fontSize="50" isBold="false" />
+	<style name="SubTitle" forecolor="#CCCCCC" fontName="DejaVu Sans" fontSize="18" isBold="false" />
+	<style name="Column header" forecolor="#666666" fontName="DejaVu Sans" fontSize="14" isBold="true" />
+	<style name="Detail" mode="Transparent" fontName="DejaVu Sans" />
+	<style name="Row" mode="Transparent" fontName="DejaVu Sans" >
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
 			<style mode="Opaque" backcolor="#F0EFEF"/>
@@ -15,7 +15,7 @@
 	</style>
 	<parameter name="stringAttribute" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[select * from sample_class where upper(string_attribute) like upper($P{stringAttribute})]]>
+		<![CDATA[select * from sample_class where upper(string_attribute) like concat(concat('%',upper($P{stringAttribute})),'%')]]>
 	</queryString>
 	<field name="ID" class="java.lang.Long"/>
 	<field name="STRING_ATTRIBUTE" class="java.lang.String"/>
